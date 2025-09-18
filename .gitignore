@@ -18,6 +18,11 @@ env/
 data/
 *.csv
 
+# Model files
+*.pt
+*.pth
+*.onnx
+
 # IDE specific files
 .idea/
 .vscode/

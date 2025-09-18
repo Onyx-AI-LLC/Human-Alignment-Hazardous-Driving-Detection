@@ -227,7 +227,8 @@ class GazeDataExtractor():
 
         
 def main():
-    gazeDataExtractor = GazeDataExtractor()
+    data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')
+    gazeDataExtractor = GazeDataExtractor(data_dir)
     gazeDataExtractor.extract_data()
 
 
