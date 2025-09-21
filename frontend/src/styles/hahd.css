@@ -101,7 +101,6 @@ body, html, #root {
 .btn:hover {
   background: #000;
   color: #fff;
-  transform: translateY(-1px);
 }
 
 .btn-primary {
@@ -167,7 +166,6 @@ body, html, #root {
 }
 
 .card:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -333,7 +331,6 @@ body, html, #root {
 }
 
 .calibration-dot:hover {
-  transform: scale(1.2);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
