@@ -1,5 +1,5 @@
 const express = require('express');
-const { saveUsersToS3, saveSurveysToS3, saveAllDataToS3 } = require('../services/dataStorage');
+const { saveUsersToS3, saveSurveysToS3, saveAllDataToS3, backfillMongoToS3 } = require('../services/dataStorage');
 const router = express.Router();
 
 // Manual data storage endpoints
@@ -57,6 +57,24 @@ router.get('/status', (req, res) => {
     automaticStorage: true,
     interval: '24 hours'
   });
+});
+
+// Backfill endpoint to migrate existing MongoDB data to S3
+router.post('/backfill', async (req, res) => {
+  try {
+    console.log('🔄 Starting backfill process...');
+    const result = await backfillMongoToS3();
+    res.status(200).json({
+      message: 'MongoDB backfill to S3 completed successfully',
+      ...result
+    });
+  } catch (error) {
+    console.error('❌ Backfill failed:', error);
+    res.status(500).json({
+      message: 'Failed to backfill MongoDB data to S3',
+      error: error.message
+    });
+  }
 });
 
 module.exports = router;
