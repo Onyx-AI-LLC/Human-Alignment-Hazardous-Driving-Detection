@@ -61,14 +61,26 @@ async function getRandomVideo() {
     });
     
     const { Contents } = await s3Client.send(listCommand);
-    console.log('Found videos in bucket:', Contents?.length);
+    console.log('Found objects in bucket:', Contents?.length);
     
     if (!Contents || Contents.length === 0) {
-      throw new Error('No videos found in bucket');
+      throw new Error('No objects found in bucket');
     }
 
-    const randomIndex = Math.floor(Math.random() * Contents.length);
-    const randomVideo = Contents[randomIndex];
+    // Filter to only include .mp4 video files
+    const videoFiles = Contents.filter(item => 
+      item.Key.endsWith('.mp4') && !item.Key.includes('/')
+    );
+    
+    console.log('Found video files:', videoFiles.length);
+    console.log('Video files:', videoFiles.map(v => v.Key).slice(0, 10)); // Log first 10
+    
+    if (videoFiles.length === 0) {
+      throw new Error('No video files found in bucket');
+    }
+
+    const randomIndex = Math.floor(Math.random() * videoFiles.length);
+    const randomVideo = videoFiles[randomIndex];
 
     
     const getObjectCommand = new GetObjectCommand({
