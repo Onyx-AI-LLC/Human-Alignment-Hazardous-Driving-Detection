@@ -12,7 +12,7 @@ const s3Client = new S3Client({
   }
 });
 
-const PRIMARY_DATA_BUCKET = 'primary-user-survey-data';
+const PRIMARY_DATA_BUCKET = 'hahd-primary-data-storage';
 
 router.get('/top-raffle-entries', async (req, res) => {
     try {
