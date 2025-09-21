@@ -35,26 +35,13 @@ body, html, #root {
   align-items: center;
   justify-content: center;
   height: 80px;
-  position: relative;
-}
-
-.nav-actions-left {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
 .nav-brand {
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  flex: 2;
   justify-content: center;
-}
-
-.nav-spacer {
-  flex: 1;
 }
 
 .company-link {
@@ -423,19 +410,8 @@ body, html, #root {
     gap: 0.5rem;
   }
   
-  .nav-actions-left {
-    flex: none;
-    order: 3;
-  }
-  
   .nav-brand {
     gap: 1rem;
-    flex: none;
-    order: 1;
-  }
-  
-  .nav-spacer {
-    display: none;
   }
   
   .study-title {
