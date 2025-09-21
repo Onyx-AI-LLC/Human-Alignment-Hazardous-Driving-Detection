@@ -5,10 +5,10 @@
 
 const API_CONFIG = {
   development: {
-    baseURL: 'http://localhost:3001'
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001'
   },
   production: {
-    baseURL: import.meta.env.VITE_API_URL || 'http://18.215.188.24:3001'
+    baseURL: import.meta.env.VITE_API_URL || 'https://human-alignment-hazardous-driving.onrender.com'
   }
 };
 
