@@ -7,11 +7,11 @@ const port = 3001;
 app.use(cors());
 app.use(express.json());
 
-console.log('🚀 Starting HAHD Test Server on localhost:3001');
+console.log('Starting HAHD Test Server on localhost:3001');
 
 // Test endpoints that match your current API
 app.get('/health', (req, res) => {
-    console.log('✅ Health check requested');
+    console.log('Health check requested');
     res.json({ 
         status: 'OK', 
         message: 'HAHD Local Test Server is running', 
@@ -122,7 +122,7 @@ app.post('/survey/results', (req, res) => {
 
 app.listen(port, () => {
     console.log(`
-🎉 HAHD Local Test Server is running!
+HAHD Local Test Server is running!
 
 📍 Server URL: http://localhost:${port}
 🔗 Health Check: http://localhost:${port}/health
@@ -131,6 +131,6 @@ app.listen(port, () => {
 📊 Survey API: http://localhost:${port}/survey/results
 
 ✨ All API endpoints are mocked and ready for frontend testing
-🚀 Start your React frontend and test the API integration!
+Start your React frontend and test the API integration!
     `);
 });

@@ -224,10 +224,10 @@ class MongoDBBackupService {
                         });
                     }
                     
-                    this.log(`✅ ${collectionName} backup completed successfully`);
+                    this.log(`${collectionName} backup completed successfully`);
                     
                 } catch (error) {
-                    this.log(`❌ Failed to backup ${collectionName}: ${error.message}`);
+                    this.log(`Failed to backup ${collectionName}: ${error.message}`);
                     backupResults.push({
                         collection: collectionName,
                         success: false,
@@ -255,7 +255,7 @@ class MongoDBBackupService {
             return report;
 
         } catch (error) {
-            this.log(`❌ Backup process failed: ${error.message}`);
+            this.log(`Backup process failed: ${error.message}`);
             throw error;
         } finally {
             if (this.client) {
@@ -315,10 +315,10 @@ async function main() {
                 const report = await service.runBackup();
                 
                 if (report.success) {
-                    console.log('✅ Backup completed successfully');
+                    console.log('Backup completed successfully');
                     process.exit(0);
                 } else {
-                    console.log('❌ Backup completed with errors');
+                    console.log('Backup completed with errors');
                     process.exit(1);
                 }
                 break;
@@ -339,9 +339,9 @@ async function main() {
                     });
                     
                     await s3Client.send(command);
-                    console.log(`✅ S3 connectivity test successful: s3://${BACKUP_BUCKET}/${testKey}`);
+                    console.log(`S3 connectivity test successful: s3://${BACKUP_BUCKET}/${testKey}`);
                 } catch (error) {
-                    console.error('❌ S3 connectivity test failed:', error.message);
+                    console.error('S3 connectivity test failed:', error.message);
                     process.exit(1);
                 }
                 break;

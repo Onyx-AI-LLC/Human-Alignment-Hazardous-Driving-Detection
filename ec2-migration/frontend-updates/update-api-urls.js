@@ -101,7 +101,7 @@ export default API_CONFIG;
     }
     
     fs.writeFileSync(configPath, configContent);
-    console.log(`✅ Created API configuration file: ${configPath}`);
+    console.log(`Created API configuration file: ${configPath}`);
     
     return configPath;
 }
@@ -143,7 +143,7 @@ function updateFile(frontendRoot, fileConfig) {
     
     if (content !== originalContent) {
         fs.writeFileSync(filePath, content);
-        console.log(`✅ Updated: ${fileConfig.path}`);
+        console.log(`Updated: ${fileConfig.path}`);
         return true;
     } else {
         console.log(`⚠️  No changes needed: ${fileConfig.path}`);
@@ -160,7 +160,7 @@ REACT_APP_ENV=development
     
     const devEnvPath = path.join(frontendRoot, '.env.development');
     fs.writeFileSync(devEnvPath, devEnvContent);
-    console.log(`✅ Created: .env.development`);
+    console.log(`Created: .env.development`);
     
     // Create .env.production template
     const prodEnvContent = `# Production Environment
@@ -172,7 +172,7 @@ REACT_APP_ENV=production
     const prodEnvPath = path.join(frontendRoot, '.env.production');
     if (!fs.existsSync(prodEnvPath)) {
         fs.writeFileSync(prodEnvPath, prodEnvContent);
-        console.log(`✅ Created: .env.production (template)`);
+        console.log(`Created: .env.production (template)`);
     } else {
         console.log(`⚠️  .env.production already exists, not overwriting`);
     }
@@ -184,7 +184,7 @@ REACT_APP_ENV=production
         if (!gitignoreContent.includes('.env.local')) {
             gitignoreContent += '\n# Environment variables\n.env.local\n.env.*.local\n';
             fs.writeFileSync(gitignorePath, gitignoreContent);
-            console.log(`✅ Updated .gitignore`);
+            console.log(`Updated .gitignore`);
         }
     }
 }
@@ -207,7 +207,7 @@ function updatePackageJsonScripts(frontendRoot) {
     packageJson.scripts['build:prod'] = 'REACT_APP_ENV=production npm run build';
     
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-    console.log(`✅ Updated package.json scripts`);
+    console.log(`Updated package.json scripts`);
 }
 
 function createUpdateInstructions(frontendRoot, serverUrl = 'YOUR_EC2_SERVER_URL') {
@@ -215,10 +215,10 @@ function createUpdateInstructions(frontendRoot, serverUrl = 'YOUR_EC2_SERVER_URL
 
 ## What was changed:
 
-1. ✅ Created \`src/config/api.ts\` for centralized API configuration
-2. ✅ Updated all API calls to use environment-based URLs
-3. ✅ Created \`.env.development\` and \`.env.production\` files
-4. ✅ Added build scripts for different environments
+1. Created \`src/config/api.ts\` for centralized API configuration
+2. Updated all API calls to use environment-based URLs
+3. Created \`.env.development\` and \`.env.production\` files
+4. Added build scripts for different environments
 
 ## Next steps:
 
@@ -282,12 +282,12 @@ ${FILES_TO_UPDATE.map(f => `- ${f.path}`).join('\n')}
 
     const instructionsPath = path.join(frontendRoot, 'FRONTEND_UPDATE_INSTRUCTIONS.md');
     fs.writeFileSync(instructionsPath, instructions);
-    console.log(`✅ Created: FRONTEND_UPDATE_INSTRUCTIONS.md`);
+    console.log(`Created: FRONTEND_UPDATE_INSTRUCTIONS.md`);
 }
 
 function main() {
     try {
-        console.log('🚀 Starting frontend API URL update...\n');
+        console.log('Starting frontend API URL update...\n');
         
         const frontendRoot = findProjectRoot();
         console.log(`📁 Frontend root: ${frontendRoot}\n`);
@@ -321,7 +321,7 @@ function main() {
         // Create instructions
         createUpdateInstructions(frontendRoot, process.argv[2]);
         
-        console.log('🎉 Frontend update completed successfully!');
+        console.log('Frontend update completed successfully!');
         console.log('\n📋 Next steps:');
         console.log('1. Update .env.production with your EC2 server URL');
         console.log('2. Read FRONTEND_UPDATE_INSTRUCTIONS.md for details');
@@ -330,7 +330,7 @@ function main() {
         console.log('5. Deploy to HostGator');
         
     } catch (error) {
-        console.error('❌ Error updating frontend:', error.message);
+        console.error('Error updating frontend:', error.message);
         process.exit(1);
     }
 }

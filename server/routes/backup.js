@@ -69,7 +69,7 @@ router.post('/backfill', async (req, res) => {
       ...result
     });
   } catch (error) {
-    console.error('❌ Backfill failed:', error);
+    console.error('Backfill failed:', error);
     res.status(500).json({
       message: 'Failed to backfill MongoDB data to S3',
       error: error.message

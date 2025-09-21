@@ -28,11 +28,11 @@ async function saveSingleUserToS3(user) {
     });
     
     await s3Client.send(putCommand);
-    console.log(`✅ User ${userData.email} saved to S3: ${fileName}`);
+    console.log(`User ${userData.email} saved to S3: ${fileName}`);
     
     return { success: true, fileName, userId: userData._id };
   } catch (error) {
-    console.error('❌ Error saving user to S3:', error);
+    console.error('Error saving user to S3:', error);
     throw error;
   }
 }
@@ -53,11 +53,11 @@ async function saveSingleSurveyToS3(survey) {
     });
     
     await s3Client.send(putCommand);
-    console.log(`✅ Survey ${surveyData._id} saved to S3: ${fileName}`);
+    console.log(`Survey ${surveyData._id} saved to S3: ${fileName}`);
     
     return { success: true, fileName, surveyId: surveyData._id };
   } catch (error) {
-    console.error('❌ Error saving survey to S3:', error);
+    console.error('Error saving survey to S3:', error);
     throw error;
   }
 }
@@ -106,11 +106,11 @@ async function createUserInS3(email, password, referredByUser, formData) {
     });
     
     await s3Client.send(putCommand);
-    console.log(`✅ User ${email} created in S3: ${fileName}`);
+    console.log(`User ${email} created in S3: ${fileName}`);
     
     return { user: userData, referralCode };
   } catch (error) {
-    console.error('❌ Error creating user in S3:', error);
+    console.error('Error creating user in S3:', error);
     throw error;
   }
 }
@@ -158,7 +158,7 @@ async function findUserByEmail(email) {
     
     return null;
   } catch (error) {
-    console.error('❌ Error finding user by email:', error);
+    console.error('Error finding user by email:', error);
     throw error;
   }
 }
@@ -190,11 +190,11 @@ async function createSurveyInS3(userId, videoId, gaze, windowDimensions, formDat
     });
     
     await s3Client.send(putCommand);
-    console.log(`✅ Survey ${surveyId} created in S3: ${fileName}`);
+    console.log(`Survey ${surveyId} created in S3: ${fileName}`);
     
     return surveyData;
   } catch (error) {
-    console.error('❌ Error creating survey in S3:', error);
+    console.error('Error creating survey in S3:', error);
     throw error;
   }
 }
@@ -222,11 +222,11 @@ async function updateUserInS3(email, updates) {
     });
     
     await s3Client.send(putCommand);
-    console.log(`✅ User ${email} updated in S3: ${fileName}`);
+    console.log(`User ${email} updated in S3: ${fileName}`);
     
     return updatedUser;
   } catch (error) {
-    console.error('❌ Error updating user in S3:', error);
+    console.error('Error updating user in S3:', error);
     throw error;
   }
 }
@@ -238,7 +238,7 @@ async function getTopUsers() {
     // This could be optimized with a database index or caching layer
     return [];
   } catch (error) {
-    console.error('❌ Error getting top users:', error);
+    console.error('Error getting top users:', error);
     throw error;
   }
 }
