@@ -5,6 +5,10 @@ const HahdHeader: React.FC = () => {
     <header className="hahd-header">
       <nav className="navbar">
         <div className="nav-container">
+          <div className="nav-actions-left">
+            <a href="/" className="btn btn-text">← Back to Onyx AI</a>
+          </div>
+          
           <div className="nav-brand">
             <a href="/" className="company-link">
               <img src="/RealOnyxLogo.jpg" alt="Onyx AI" className="logo-image" />
@@ -15,9 +19,7 @@ const HahdHeader: React.FC = () => {
             </div>
           </div>
           
-          <div className="nav-actions">
-            <a href="/" className="btn btn-text">← Back to Onyx AI</a>
-          </div>
+          <div className="nav-spacer"></div>
         </div>
       </nav>
     </header>
