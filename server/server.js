@@ -5,7 +5,7 @@ const auth = require('./routes/auth');
 const survey = require('./routes/survey');
 const videoRoutes = require('./routes/videos');
 const backupRoutes = require('./routes/backup');
-const { startAutomaticDataStorage } = require('./services/dataStorage');
+// Real-time S3 storage is now handled in auth and survey routes
 const cors = require('cors');
 const app = express();
 
@@ -31,7 +31,5 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`express server listening on port ${PORT}`);
-    
-    // Start automatic data storage to S3
-    startAutomaticDataStorage();
+    console.log('📦 Real-time S3 data storage enabled - saving users and surveys immediately');
 });

@@ -1,5 +1,6 @@
 const express = require('express');
 const { createToken } = require('../utils/token');
+const { saveSingleUserToS3 } = require('../services/dataStorage');
 const router = express.Router();
 const User = require('../models/user');
 
@@ -9,6 +10,14 @@ router.post('/register', async (req, res) => {
     try {
         const { user, referralCode } = await User.register(email, password, referredByUser, formData)
         const token = createToken(user._id)
+        
+        // Immediately save user to S3 primary storage
+        try {
+            await saveSingleUserToS3(user);
+        } catch (s3Error) {
+            console.error('Warning: Failed to save user to S3:', s3Error);
+            // Don't fail registration if S3 save fails
+        }
         
         const surveysCompleted = user.numSurveysFilled
         const numRaffleEntries = user.numRaffleEntries

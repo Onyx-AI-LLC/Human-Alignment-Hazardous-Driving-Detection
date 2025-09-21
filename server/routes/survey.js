@@ -1,4 +1,5 @@
 const express = require('express');
+const { saveSingleSurveyToS3 } = require('../services/dataStorage');
 const router = express.Router();
 const SurveyResult = require('../models/survey');
 const User = require('../models/user');
@@ -33,13 +34,21 @@ router.post('/results', async (req, res) => {
             y: entry.y
         }));
 
-        await SurveyResult.create({
+        const survey = await SurveyResult.create({
             userId: userId,
             videoId: videoId,
             windowDimensions, windowDimensions,
             gaze: cleanedGazeData,
             formData: formData
         })
+        
+        // Immediately save survey to S3 primary storage
+        try {
+            await saveSingleSurveyToS3(survey);
+        } catch (s3Error) {
+            console.error('Warning: Failed to save survey to S3:', s3Error);
+            // Don't fail survey submission if S3 save fails
+        }
         
         await User.findOneAndUpdate(
             {email: userId}, 

@@ -41,6 +41,28 @@ async function saveUsersToS3() {
   }
 }
 
+async function saveSingleUserToS3(user) {
+  try {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const fileName = `raw/user-${user._id}-${timestamp}.json`;
+    
+    const putCommand = new PutObjectCommand({
+      Bucket: PRIMARY_DATA_BUCKET,
+      Key: fileName,
+      Body: JSON.stringify(user, null, 2),
+      ContentType: 'application/json'
+    });
+    
+    await s3Client.send(putCommand);
+    console.log(`✅ User ${user.email} saved to S3: ${fileName}`);
+    
+    return { success: true, fileName, userId: user._id };
+  } catch (error) {
+    console.error('❌ Error saving user to S3:', error);
+    throw error;
+  }
+}
+
 async function saveSurveysToS3() {
   try {
     console.log('Starting survey data storage to S3...');
@@ -70,6 +92,28 @@ async function saveSurveysToS3() {
   }
 }
 
+async function saveSingleSurveyToS3(survey) {
+  try {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const fileName = `raw/survey-${survey._id}-${timestamp}.json`;
+    
+    const putCommand = new PutObjectCommand({
+      Bucket: PRIMARY_DATA_BUCKET,
+      Key: fileName,
+      Body: JSON.stringify(survey, null, 2),
+      ContentType: 'application/json'
+    });
+    
+    await s3Client.send(putCommand);
+    console.log(`✅ Survey ${survey._id} saved to S3: ${fileName}`);
+    
+    return { success: true, fileName, surveyId: survey._id };
+  } catch (error) {
+    console.error('❌ Error saving survey to S3:', error);
+    throw error;
+  }
+}
+
 async function saveAllDataToS3() {
   try {
     console.log('🔄 Starting full data storage to S3...');
@@ -95,22 +139,10 @@ async function saveAllDataToS3() {
   }
 }
 
-// Schedule automatic data storage (every 24 hours)
-function startAutomaticDataStorage() {
-  console.log('🕒 Starting automatic data storage to S3 (every 24 hours)');
-  
-  // Store data immediately on startup
-  saveAllDataToS3().catch(console.error);
-  
-  // Then store data every 24 hours
-  setInterval(() => {
-    saveAllDataToS3().catch(console.error);
-  }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
-}
-
 module.exports = {
   saveUsersToS3,
   saveSurveysToS3,
   saveAllDataToS3,
-  startAutomaticDataStorage
+  saveSingleUserToS3,
+  saveSingleSurveyToS3
 };
