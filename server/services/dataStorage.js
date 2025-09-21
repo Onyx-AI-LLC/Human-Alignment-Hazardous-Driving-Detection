@@ -146,6 +146,8 @@ async function findUserByEmail(email) {
         }
       } catch (fileError) {
         console.error(`Error reading user file ${object.Key}:`, fileError);
+        // Skip corrupted files and continue searching
+        continue;
       }
     }
     
