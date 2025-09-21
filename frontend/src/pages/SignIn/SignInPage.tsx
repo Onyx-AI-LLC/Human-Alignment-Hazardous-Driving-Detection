@@ -8,6 +8,7 @@ import { SignInFormData } from '../../utils/types';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useSignIn from '../../hooks/useSignIn';
+import HahdHeader from '../../components/hahd/HahdHeader';
 
 const TermsOfService = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -85,7 +86,7 @@ const TermsOfService = () => {
                             <h3 className="fw-bold border-bottom pb-2">3) Winner Selection & Prize Distribution</h3>
                             <div className="ps-3">
                                 <p className="mb-3"><strong>Selection Process:</strong></p>
-                                <p className="mb-2">• Winners are selected randomly on the first day of each month</p>
+                                <p className="mb-2">• Winners are selected randomly on the first day of each year</p>
                                 <p className="mb-2">• Multiple entries increase chances of winning</p>
                                 <p className="mb-2">• Winners will be notified via their registered email address</p>
 
@@ -94,7 +95,7 @@ const TermsOfService = () => {
                                 <p className="mb-2">• Distribution: ONYX AI LLC will process payment within 5 business days</p>
                                 <p className="mb-2">• Payment Methods: PayPal, bank transfer, or digital gift card</p>
                                 <p className="mb-2">• Winners must respond within 7 days of notification to claim prize</p>
-                                <p className="mb-2">• Unclaimed prizes will be rolled over to the next month's drawing</p>
+                                <p className="mb-2">• Unclaimed prizes will not be rolled over to the next years drawing</p>
                             </div>
                         </section>
 
@@ -177,7 +178,9 @@ const SignInPage: React.FC = () => {
     }
 
     return (
-        <Container fluid className="vh-100">
+        <>
+            <HahdHeader />
+            <Container fluid className="vh-100">
             <Row className="h-100">
                 {/* First Column */}
                 <Col
@@ -229,7 +232,7 @@ const SignInPage: React.FC = () => {
                                 Sign In
                             </Button>
                             <p className="mt-3 text-center fst-italic">
-                                Don't have an account? <Link to="/registration">Sign up</Link>
+                                Don't have an account? <Link to="/hahd/registration">Sign up</Link>
                             </p>
                         </Form>
                     </div>
@@ -288,6 +291,7 @@ const SignInPage: React.FC = () => {
                 </Col>
             </Row>
         </Container>
+        </>
     );
 };
 

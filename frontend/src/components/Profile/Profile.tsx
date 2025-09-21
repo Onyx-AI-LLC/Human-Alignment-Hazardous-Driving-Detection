@@ -50,7 +50,7 @@ const Profile: React.FC = () => {
     };
 
     const handleNavigateInstructions = () => {
-        navigate('/landingpage');
+        navigate('/hahd/dashboard');
     }
 
     useEffect(() => {

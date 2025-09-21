@@ -11,6 +11,7 @@ import useRegister from '../../hooks/useRegister';
 import useValidateReferral from '../../hooks/useValidateReferral';
 import { Container } from 'react-bootstrap';
 import { countries } from '../../utils/countries';
+import HahdHeader from '../../components/hahd/HahdHeader';
 
 const RegistrationPage: React.FC = () => {
     const navigate = useNavigate();
@@ -197,7 +198,9 @@ const RegistrationPage: React.FC = () => {
     }
 
     return (
-        <div className={styles.container}>
+        <>
+            <HahdHeader />
+            <div className={styles.container}>
             <Container className={styles.containerWrapper}>
                 <Row className="h-100">
                     {/* First Column */}
@@ -445,6 +448,7 @@ const RegistrationPage: React.FC = () => {
                 </Row>
             </Container>
         </div>
+        </>
     )
 }
 

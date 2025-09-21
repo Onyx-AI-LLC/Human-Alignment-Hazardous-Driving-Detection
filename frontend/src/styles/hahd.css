@@ -1,0 +1,463 @@
+/* HAHD Study Styles - Bold Black & White Design matching Onyx AI branding */
+
+/* Base Styles */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  color: #000;
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+/* HAHD Header Styles */
+.hahd-header {
+  background: #fff;
+  border-bottom: 3px solid #000;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.company-link {
+  text-decoration: none;
+}
+
+.logo-image {
+  height: 50px;
+  width: auto;
+}
+
+.study-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.study-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.study-subtitle {
+  font-size: 0.875rem;
+  color: #666;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.25rem;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* Button Styles */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 2px solid #000;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  background: transparent;
+  color: #000;
+}
+
+.btn:hover {
+  background: #000;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: #000;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #333;
+  border-color: #333;
+}
+
+.btn-text {
+  border: none;
+  padding: 0.5rem 1rem;
+  background: none;
+  font-weight: 600;
+}
+
+.btn-text:hover {
+  background: #f0f0f0;
+  transform: none;
+}
+
+/* Page Layout */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid #000;
+}
+
+.page-title {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+}
+
+.page-subtitle {
+  font-size: 1.25rem;
+  color: #666;
+  font-weight: 500;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Card Styles */
+.card {
+  background: #fff;
+  border: 2px solid #000;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  margin-bottom: 1.5rem;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 0.5rem;
+}
+
+.card-description {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.875rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #000;
+  background: #fff;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #333;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-input::placeholder {
+  color: #999;
+}
+
+/* Alert Styles */
+.alert {
+  padding: 1rem 1.5rem;
+  border: 2px solid;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.alert-success {
+  background: #f0f8f0;
+  border-color: #000;
+  color: #000;
+}
+
+.alert-error {
+  background: #fff0f0;
+  border-color: #000;
+  color: #000;
+}
+
+.alert-info {
+  background: #f0f8ff;
+  border-color: #000;
+  color: #000;
+}
+
+/* Progress Styles */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #f0f0f0;
+  border: 1px solid #000;
+  margin: 1rem 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #000;
+  transition: width 0.3s ease;
+}
+
+/* Loading Styles */
+.loading-spinner {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 3px solid #f0f0f0;
+  border-top: 3px solid #000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Survey Specific Styles */
+.survey-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.survey-question {
+  margin-bottom: 2rem;
+  padding: 2rem;
+  border: 2px solid #000;
+  background: #fff;
+}
+
+.survey-question h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 1rem;
+}
+
+/* Video Player Styles */
+.video-container {
+  border: 3px solid #000;
+  margin: 2rem 0;
+  background: #000;
+}
+
+.video-controls {
+  background: #fff;
+  border-top: 2px solid #000;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* Calibration Styles */
+.calibration-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.calibration-dot {
+  width: 20px;
+  height: 20px;
+  background: #000;
+  border-radius: 50%;
+  position: absolute;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.calibration-dot:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Leaderboard Styles */
+.leaderboard {
+  background: #fff;
+  border: 2px solid #000;
+  margin: 2rem 0;
+}
+
+.leaderboard-header {
+  background: #000;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+}
+
+.leaderboard-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.leaderboard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.leaderboard-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+  font-weight: 500;
+}
+
+.leaderboard-item:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-rank {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #000;
+  min-width: 40px;
+}
+
+.leaderboard-name {
+  flex: 1;
+  margin-left: 1rem;
+}
+
+.leaderboard-score {
+  font-weight: 700;
+  color: #000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 0 1rem;
+    height: 70px;
+  }
+  
+  .nav-brand {
+    gap: 1rem;
+  }
+  
+  .study-title {
+    font-size: 1.25rem;
+  }
+  
+  .study-subtitle {
+    font-size: 0.75rem;
+  }
+  
+  .page-container {
+    padding: 1rem;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .card {
+    padding: 1.5rem;
+  }
+  
+  .btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Ensure existing page styles work with new branding */
+.signin-container,
+.registration-container,
+.landing-container,
+.calibration-container,
+.survey-container,
+.models-container {
+  min-height: calc(100vh - 80px);
+  background: #fff;
+}
+
+/* Override any Bootstrap or existing styles that conflict */
+.btn-primary:not(.hahd-btn) {
+  background-color: #000 !important;
+  border-color: #000 !important;
+}
+
+.btn-primary:not(.hahd-btn):hover {
+  background-color: #333 !important;
+  border-color: #333 !important;
+}
+
+/* Make sure forms look consistent */
+.form-control {
+  border: 2px solid #000 !important;
+  border-radius: 0 !important;
+}
+
+.form-control:focus {
+  border-color: #333 !important;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Navbar overrides for consistency */
+.navbar-brand img {
+  height: 50px !important;
+}
