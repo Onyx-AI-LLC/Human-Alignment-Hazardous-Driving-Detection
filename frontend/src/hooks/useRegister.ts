@@ -1,5 +1,6 @@
 import { useAuth } from "./useAuth";
 import { RegistrationFormData } from "../utils/types";
+import { API_BASE } from "../config/api";
 import axios from "axios";
 
 const useRegister = () => {
@@ -7,7 +8,7 @@ const useRegister = () => {
 
     const registerUser = async (registrationFormData: RegistrationFormData) => {
         try {
-            const response = await axios.post('https://human-alignment-hazardous-driving.onrender.com/auth/register', registrationFormData);
+            const response = await axios.post(`${API_BASE}/auth/register`, registrationFormData);
             console.log('User has successfully registered!', response);
 
             localStorage.setItem('user', JSON.stringify(response.data));

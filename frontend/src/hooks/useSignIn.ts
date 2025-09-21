@@ -1,5 +1,6 @@
 import { useAuth } from "./useAuth";
 import { SignInFormData } from "../utils/types";
+import { API_BASE } from "../config/api";
 import axios from "axios";
 
 const useSignIn = () => {
@@ -7,7 +8,7 @@ const useSignIn = () => {
 
     const signIn = async (signInFormData: SignInFormData) => {
         try {
-            const response = await axios.post('https://human-alignment-hazardous-driving.onrender.com/auth/signIn', signInFormData);
+            const response = await axios.post(`${API_BASE}/auth/signIn`, signInFormData);
             console.log('User has successfully signed in!', response);
 
             localStorage.setItem('user', JSON.stringify(response.data));

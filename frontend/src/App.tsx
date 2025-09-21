@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import './App.css'
+import './test-api';
 import SignInPage from './pages/SignIn/SignInPage';
 import RegistrationPage from './pages/Registration/RegistrationPage';
 import LandingPage from './pages/LandingPage/LandingPage';

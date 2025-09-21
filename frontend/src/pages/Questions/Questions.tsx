@@ -8,6 +8,7 @@ import Profile from "../../components/Profile/Profile";
 import UserStats from "../../components/UserStats/UserStats";
 import Leaderboard from "../../components/Leaderboard/Leaderboard";
 import axios from "axios";
+import { API_BASE } from "../../config/api";
 
 const Questions: React.FC<QuestionsProps> = ({ onFormSumbitted, videoId, spacebarTimestamps, startTime, endTime }) => {
     const { finalGazeData, resetFinalGazeData } = useWebGazer();
@@ -29,7 +30,7 @@ const Questions: React.FC<QuestionsProps> = ({ onFormSumbitted, videoId, spaceba
                 if (userItem) {
                     const user = JSON.parse(userItem);
 
-                    const response = await axios.get('https://human-alignment-hazardous-driving.onrender.com/survey/top-raffle-entries', {
+                    const response = await axios.get(`${API_BASE}/survey/top-raffle-entries`, {
                         params: {
                             currentUserEmail: user.email
                         }

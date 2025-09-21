@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VideoData, VideoPlayerProps } from '../../utils/interfaces';
 import { Spinner } from 'react-bootstrap';
 import { useWebGazer } from '../../hooks/useWebGazer';
+import { API_BASE } from '../../config/api';
 
 // Define an interface for your data structure
 interface PredictionData {
@@ -106,7 +107,7 @@ const ModelVideoPlayer: React.FC<VideoPlayerProps> = ({ onVideoComplete, passVid
     const fetchVideo = async (): Promise<void> => {
         try {
             setLoading(true);
-            const response = await fetch('https://human-alignment-hazardous-driving.onrender.com/api/videos/238');
+            const response = await fetch(`${API_BASE}/api/videos/238`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
