@@ -1,6 +1,6 @@
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-const User = require('../models/user');
-const Survey = require('../models/survey');
+const { S3Client, PutObjectCommand, ListObjectsV2Command, GetObjectCommand } = require('@aws-sdk/client-s3');
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
@@ -11,35 +11,6 @@ const s3Client = new S3Client({
 });
 
 const PRIMARY_DATA_BUCKET = 'hahd-primary-data-storage';
-
-async function saveUsersToS3() {
-  try {
-    console.log('Starting user data storage to S3...');
-    
-    // Get all users from MongoDB
-    const users = await User.find({}).lean();
-    
-    // Create backup file with timestamp
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const fileName = `raw/users-backup-${timestamp}.json`;
-    
-    // Upload to S3
-    const putCommand = new PutObjectCommand({
-      Bucket: PRIMARY_DATA_BUCKET,
-      Key: fileName,
-      Body: JSON.stringify(users, null, 2),
-      ContentType: 'application/json'
-    });
-    
-    await s3Client.send(putCommand);
-    console.log(`✅ Users backup saved to S3: ${fileName}`);
-    
-    return { success: true, fileName, count: users.length };
-  } catch (error) {
-    console.error('❌ Error backing up users to S3:', error);
-    throw error;
-  }
-}
 
 async function saveSingleUserToS3(user) {
   try {
@@ -62,35 +33,6 @@ async function saveSingleUserToS3(user) {
     return { success: true, fileName, userId: userData._id };
   } catch (error) {
     console.error('❌ Error saving user to S3:', error);
-    throw error;
-  }
-}
-
-async function saveSurveysToS3() {
-  try {
-    console.log('Starting survey data storage to S3...');
-    
-    // Get all surveys from MongoDB
-    const surveys = await Survey.find({}).lean();
-    
-    // Create backup file with timestamp
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const fileName = `raw/surveys-backup-${timestamp}.json`;
-    
-    // Upload to S3
-    const putCommand = new PutObjectCommand({
-      Bucket: PRIMARY_DATA_BUCKET,
-      Key: fileName,
-      Body: JSON.stringify(surveys, null, 2),
-      ContentType: 'application/json'
-    });
-    
-    await s3Client.send(putCommand);
-    console.log(`✅ Surveys backup saved to S3: ${fileName}`);
-    
-    return { success: true, fileName, count: surveys.length };
-  } catch (error) {
-    console.error('❌ Error backing up surveys to S3:', error);
     throw error;
   }
 }
@@ -120,114 +62,153 @@ async function saveSingleSurveyToS3(survey) {
   }
 }
 
-async function saveAllDataToS3() {
+// Generate unique user ID
+function generateUserId() {
+  return crypto.randomBytes(12).toString('hex');
+}
+
+// Generate referral code
+function generateReferralCode() {
+  return crypto.randomBytes(6).toString('hex').toUpperCase();
+}
+
+// Create user directly in S3
+async function createUserInS3(email, password, referredByUser, formData) {
   try {
-    console.log('🔄 Starting full data storage to S3...');
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
     
-    const userStorage = await saveUsersToS3();
-    const surveyStorage = await saveSurveysToS3();
+    // Create user object
+    const userId = generateUserId();
+    const referralCode = generateReferralCode();
+    const timestamp = new Date().toISOString();
     
-    console.log('✅ Full data storage completed!');
-    console.log(`- Users: ${userStorage.count} records → ${userStorage.fileName}`);
-    console.log(`- Surveys: ${surveyStorage.count} records → ${surveyStorage.fileName}`);
-    
-    return {
-      success: true,
-      storage: {
-        users: userStorage,
-        surveys: surveyStorage
-      },
-      timestamp: new Date().toISOString()
+    const userData = {
+      _id: userId,
+      email,
+      password: hashedPassword,
+      referralCode,
+      numSurveysFilled: 0,
+      numRaffleEntries: 0,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      referredByUser: referredByUser || null,
+      ...formData
     };
+    
+    const fileName = `raw/users/${userId}-${timestamp.replace(/[:.]/g, '-')}.json`;
+    
+    const putCommand = new PutObjectCommand({
+      Bucket: PRIMARY_DATA_BUCKET,
+      Key: fileName,
+      Body: JSON.stringify(userData, null, 2),
+      ContentType: 'application/json'
+    });
+    
+    await s3Client.send(putCommand);
+    console.log(`✅ User ${email} created in S3: ${fileName}`);
+    
+    return { user: userData, referralCode };
   } catch (error) {
-    console.error('❌ Full data storage failed:', error);
+    console.error('❌ Error creating user in S3:', error);
     throw error;
   }
 }
 
-async function backfillMongoToS3() {
+// Find user by email in S3
+async function findUserByEmail(email) {
   try {
-    console.log('🔄 Starting MongoDB backfill to S3...');
+    const listCommand = new ListObjectsV2Command({
+      Bucket: PRIMARY_DATA_BUCKET,
+      Prefix: 'raw/users/',
+      MaxKeys: 1000
+    });
     
-    // Get all existing users from MongoDB
-    const users = await User.find({}).lean();
-    console.log(`Found ${users.length} users to backfill`);
+    const response = await s3Client.send(listCommand);
     
-    // Save each user individually with proper directory structure
-    let userCount = 0;
-    for (const user of users) {
+    if (!response.Contents || response.Contents.length === 0) {
+      return null;
+    }
+    
+    // Search through user files
+    for (const object of response.Contents) {
       try {
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const fileName = `raw/users/${user._id}-backfill-${timestamp}.json`;
-        
-        const putCommand = new PutObjectCommand({
+        const getCommand = new GetObjectCommand({
           Bucket: PRIMARY_DATA_BUCKET,
-          Key: fileName,
-          Body: JSON.stringify(user, null, 2),
-          ContentType: 'application/json'
+          Key: object.Key
         });
         
-        await s3Client.send(putCommand);
-        userCount++;
+        const fileResponse = await s3Client.send(getCommand);
+        const userData = JSON.parse(await fileResponse.Body.transformToString());
         
-        if (userCount % 10 === 0) {
-          console.log(`✅ Backfilled ${userCount}/${users.length} users`);
+        if (userData.email === email) {
+          return userData;
         }
-      } catch (error) {
-        console.error(`❌ Failed to backfill user ${user._id}:`, error);
+      } catch (fileError) {
+        console.error(`Error reading user file ${object.Key}:`, fileError);
       }
     }
     
-    // Get all existing surveys from MongoDB  
-    const surveys = await Survey.find({}).lean();
-    console.log(`Found ${surveys.length} surveys to backfill`);
+    return null;
+  } catch (error) {
+    console.error('❌ Error finding user by email:', error);
+    throw error;
+  }
+}
+
+// Create survey directly in S3
+async function createSurveyInS3(userId, videoId, gaze, windowDimensions, formData) {
+  try {
+    const surveyId = generateUserId(); // Reuse function for unique ID
+    const timestamp = new Date().toISOString();
     
-    // Save each survey individually with proper directory structure
-    let surveyCount = 0;
-    for (const survey of surveys) {
-      try {
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const fileName = `raw/results/${survey._id}-backfill-${timestamp}.json`;
-        
-        const putCommand = new PutObjectCommand({
-          Bucket: PRIMARY_DATA_BUCKET,
-          Key: fileName,
-          Body: JSON.stringify(survey, null, 2),
-          ContentType: 'application/json'
-        });
-        
-        await s3Client.send(putCommand);
-        surveyCount++;
-        
-        if (surveyCount % 10 === 0) {
-          console.log(`✅ Backfilled ${surveyCount}/${surveys.length} surveys`);
-        }
-      } catch (error) {
-        console.error(`❌ Failed to backfill survey ${survey._id}:`, error);
-      }
-    }
-    
-    console.log('🎉 Backfill completed!');
-    console.log(`- Users: ${userCount}/${users.length} backfilled to raw/users/`);
-    console.log(`- Surveys: ${surveyCount}/${surveys.length} backfilled to raw/results/`);
-    
-    return {
-      success: true,
-      users: { backfilled: userCount, total: users.length },
-      surveys: { backfilled: surveyCount, total: surveys.length }
+    const surveyData = {
+      _id: surveyId,
+      userId,
+      videoId,
+      gaze,
+      windowDimensions,
+      formData,
+      createdAt: timestamp,
+      updatedAt: timestamp
     };
     
+    const fileName = `raw/results/${surveyId}-${timestamp.replace(/[:.]/g, '-')}.json`;
+    
+    const putCommand = new PutObjectCommand({
+      Bucket: PRIMARY_DATA_BUCKET,
+      Key: fileName,
+      Body: JSON.stringify(surveyData, null, 2),
+      ContentType: 'application/json'
+    });
+    
+    await s3Client.send(putCommand);
+    console.log(`✅ Survey ${surveyId} created in S3: ${fileName}`);
+    
+    return surveyData;
   } catch (error) {
-    console.error('❌ Backfill failed:', error);
+    console.error('❌ Error creating survey in S3:', error);
+    throw error;
+  }
+}
+
+// Get top users by raffle entries (simplified version)
+async function getTopUsers() {
+  try {
+    // For now, return empty array since we'd need to scan all S3 user files
+    // This could be optimized with a database index or caching layer
+    return [];
+  } catch (error) {
+    console.error('❌ Error getting top users:', error);
     throw error;
   }
 }
 
 module.exports = {
-  saveUsersToS3,
-  saveSurveysToS3,
-  saveAllDataToS3,
   saveSingleUserToS3,
   saveSingleSurveyToS3,
-  backfillMongoToS3
+  createUserInS3,
+  findUserByEmail,
+  createSurveyInS3,
+  getTopUsers
 };

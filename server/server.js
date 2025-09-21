@@ -1,16 +1,12 @@
 require('dotenv').config();
 const express = require('express');
-const connectMongoDB = require('./config/db');
 const auth = require('./routes/auth');
 const survey = require('./routes/survey');
 const videoRoutes = require('./routes/videos');
-const backupRoutes = require('./routes/backup');
-// Real-time S3 storage is now handled in auth and survey routes
 const cors = require('cors');
 const app = express();
 
-// Connect to MongoDB
-connectMongoDB();
+// MongoDB connection removed - using S3 for data storage
 
 // Apply Middleware
 app.use(express.json({ limit: '50mb' }));
@@ -22,7 +18,6 @@ app.use(express.json());
 app.use('/auth', auth);
 app.use('/survey', survey);
 app.use('/api/videos', videoRoutes);
-app.use('/backup', backupRoutes);
 
 app.get('/', (req, res) => {
     res.json('Welcome to the Human-Aligned Hazard Detection Survey');
@@ -31,5 +26,4 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`express server listening on port ${PORT}`);
-    console.log('📦 Real-time S3 data storage enabled - saving users and surveys immediately');
 });
