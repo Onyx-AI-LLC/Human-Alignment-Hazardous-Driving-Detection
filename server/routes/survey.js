@@ -26,8 +26,10 @@ router.get('/top-raffle-entries', async (req, res) => {
         });
         
         const response = await s3Client.send(listCommand);
+        console.log('S3 list response:', response.Contents?.length, 'objects found');
         
         if (!response.Contents || response.Contents.length === 0) {
+            console.log('No user files found in S3, returning empty leaderboard');
             return res.json({ topUsers: [], currentUserRank: 1, currentUser: null });
         }
         
@@ -48,15 +50,19 @@ router.get('/top-raffle-entries', async (req, res) => {
                 const fileResponse = await s3Client.send(getCommand);
                 const userData = JSON.parse(await fileResponse.Body.transformToString());
                 
-                allUsers.push({
-                    email: userData.email,
-                    numRaffleEntries: userData.numRaffleEntries || 0
-                });
+                if (userData.email) {
+                    allUsers.push({
+                        email: userData.email,
+                        numRaffleEntries: userData.numRaffleEntries || 0
+                    });
+                }
             } catch (fileError) {
                 console.error(`Error reading user file ${object.Key}:`, fileError);
                 continue;
             }
         }
+        
+        console.log(`Found ${allUsers.length} valid users in S3`);
         
         // Sort users by numRaffleEntries (highest first)
         allUsers.sort((a, b) => b.numRaffleEntries - a.numRaffleEntries);
@@ -76,6 +82,7 @@ router.get('/top-raffle-entries', async (req, res) => {
             }
         }
         
+        console.log(`Returning leaderboard with ${topUsers.length} top users`);
         res.json({ topUsers, currentUserRank, currentUser });
     } catch (error) {
         console.error('Error fetching top users:', error);
@@ -99,10 +106,18 @@ router.post('/results', async (req, res) => {
         await createSurveyInS3(userId, videoId, cleanedGazeData, windowDimensions, formData);
         
         // Update user's survey count and raffle entries in S3
-        await updateUserInS3(userId, {
-            numSurveysFilled: numSurveysCompleted,
-            numRaffleEntries: (await findUserByEmail(userId)).numRaffleEntries + 1
-        });
+        try {
+            const currentUser = await findUserByEmail(userId);
+            if (currentUser) {
+                await updateUserInS3(userId, {
+                    numSurveysFilled: numSurveysCompleted,
+                    numRaffleEntries: (currentUser.numRaffleEntries || 0) + 1
+                });
+            }
+        } catch (updateError) {
+            console.error('Error updating user after survey submission:', updateError);
+            // Continue anyway - survey was saved successfully
+        }
         
 
         res.status(201).json({ message: 'Survey result saved successfully; User data updated'});
