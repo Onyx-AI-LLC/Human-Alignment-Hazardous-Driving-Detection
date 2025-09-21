@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import VideoPlayer from "../../components/video/VideoPlayer";
 import Questions from "../Questions/Questions";
 import { Modal, Button } from "react-bootstrap";
 import styles from './Survey.module.css';
+import HahdHeader from "../../components/hahd/HahdHeader";
 
 const Survey: React.FC = () => {
+    const navigate = useNavigate();
     const [videoPlaying, setVideoPlaying] = useState<boolean>(true);
     const [videoId, setVideoId] = useState('');
     const [spacebarTimestamps, setSpacebarTimestamps] = useState<number[]>([]);
@@ -23,6 +26,10 @@ const Survey: React.FC = () => {
     const handleNextScenario = () => {
         setShowConfirmation(false);
         setVideoPlaying(true);
+    }
+
+    const handleReturnHome = () => {
+        navigate('/hahd/dashboard');
     }
 
     const handleVideoId = (videoId: string) => {
@@ -93,13 +100,22 @@ const Survey: React.FC = () => {
                     Remember to press the spacebar whenever you spot a potentially hazardous situation.
                 </p>
                 <KeyboardSVG />
-                <Button
-                    variant="primary"
-                    onClick={handleNextScenario}
-                    className={styles.nextSurveyButton}
-                >
-                    Yes, I'm Ready
-                </Button>
+                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem' }}>
+                    <Button
+                        variant="primary"
+                        onClick={handleNextScenario}
+                        className={styles.nextSurveyButton}
+                    >
+                        Yes, I'm Ready
+                    </Button>
+                    <Button
+                        variant="outline-secondary"
+                        onClick={handleReturnHome}
+                        className={styles.returnHomeButton}
+                    >
+                        Return to Home Page
+                    </Button>
+                </div>
             </Modal.Body>
         </Modal>
     );
@@ -115,6 +131,7 @@ const Survey: React.FC = () => {
     } else {
         return (
             <>
+                <HahdHeader />
                 <Questions
                     onFormSumbitted={handleFormSubmitted}
                     videoId={videoId}
