@@ -132,6 +132,11 @@ async function findUserByEmail(email) {
     
     // Search through user files
     for (const object of response.Contents) {
+      // Skip directory entries and only process actual user files
+      if (object.Key.endsWith('/') || object.Size === 0) {
+        continue;
+      }
+      
       try {
         const getCommand = new GetObjectCommand({
           Bucket: PRIMARY_DATA_BUCKET,
