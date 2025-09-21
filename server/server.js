@@ -4,6 +4,8 @@ const connectMongoDB = require('./config/db');
 const auth = require('./routes/auth');
 const survey = require('./routes/survey');
 const videoRoutes = require('./routes/videos');
+const backupRoutes = require('./routes/backup');
+const { startAutomaticDataStorage } = require('./services/dataStorage');
 const cors = require('cors');
 const app = express();
 
@@ -20,6 +22,7 @@ app.use(express.json());
 app.use('/auth', auth);
 app.use('/survey', survey);
 app.use('/api/videos', videoRoutes);
+app.use('/backup', backupRoutes);
 
 app.get('/', (req, res) => {
     res.json('Welcome to the Human-Aligned Hazard Detection Survey');
@@ -28,4 +31,7 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`express server listening on port ${PORT}`);
+    
+    // Start automatic data storage to S3
+    startAutomaticDataStorage();
 });

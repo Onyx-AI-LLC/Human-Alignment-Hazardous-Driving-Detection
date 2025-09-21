@@ -8,7 +8,7 @@ const API_CONFIG = {
     baseURL: 'http://localhost:3001'
   },
   production: {
-    baseURL: import.meta.env.VITE_API_URL || 'http://13.222.122.86'
+    baseURL: import.meta.env.VITE_API_URL || 'http://18.215.188.24:3001'
   }
 };
 
