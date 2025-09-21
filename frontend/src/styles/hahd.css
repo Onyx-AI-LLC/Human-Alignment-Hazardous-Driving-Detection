@@ -432,7 +432,27 @@ body {
 .survey-container,
 .models-container {
   min-height: calc(100vh - 80px);
+  max-height: calc(100vh - 80px);
   background: #fff;
+  overflow: hidden;
+}
+
+/* Fix container heights to prevent vertical scrolling */
+.vh-100 {
+  height: calc(100vh - 80px) !important;
+  overflow: hidden;
+}
+
+/* Container adjustments */
+.container-fluid.vh-100 {
+  height: calc(100vh - 80px) !important;
+  overflow: hidden;
+}
+
+/* Fix Bootstrap container height */
+.container.h-100 {
+  height: calc(100vh - 80px) !important;
+  overflow: hidden;
 }
 
 /* Override any Bootstrap or existing styles that conflict */

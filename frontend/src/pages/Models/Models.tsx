@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Tabs, Tab, Button, Container } from 'react-bootstrap';
 import styles from './Models.module.css'
 import ModelVideoPlayer from '../../components/video/ModelVideoPlayer';
+import HahdHeader from '../../components/hahd/HahdHeader';
 
 const ModelTabs = () => {
   const [activeKey, setActiveKey] = useState(0);
@@ -55,7 +56,9 @@ const ModelTabs = () => {
   };
 
   return (
-    <Container fluid className={styles.container}>
+    <>
+      <HahdHeader />
+      <Container fluid className={styles.container}>
       <Card className={styles.card}>
         <div className={styles.tabsContainer}>
           <Tabs
@@ -124,6 +127,7 @@ const ModelTabs = () => {
         </div>
       </Card>
     </Container>
+    </>
   );
 };
 
