@@ -199,6 +199,38 @@ async function createSurveyInS3(userId, videoId, gaze, windowDimensions, formDat
   }
 }
 
+// Update user data in S3
+async function updateUserInS3(email, updates) {
+  try {
+    // First, find the user file
+    const user = await findUserByEmail(email);
+    if (!user) {
+      throw new Error(`User with email ${email} not found`);
+    }
+    
+    // Update the user data
+    const updatedUser = { ...user, ...updates, updatedAt: new Date().toISOString() };
+    
+    // Generate filename based on user ID
+    const fileName = `raw/users/${user._id}-${email.replace(/[@.]/g, '_')}.json`;
+    
+    const putCommand = new PutObjectCommand({
+      Bucket: PRIMARY_DATA_BUCKET,
+      Key: fileName,
+      Body: JSON.stringify(updatedUser, null, 2),
+      ContentType: 'application/json'
+    });
+    
+    await s3Client.send(putCommand);
+    console.log(`✅ User ${email} updated in S3: ${fileName}`);
+    
+    return updatedUser;
+  } catch (error) {
+    console.error('❌ Error updating user in S3:', error);
+    throw error;
+  }
+}
+
 // Get top users by raffle entries (simplified version)
 async function getTopUsers() {
   try {
@@ -217,5 +249,6 @@ module.exports = {
   createUserInS3,
   findUserByEmail,
   createSurveyInS3,
+  updateUserInS3,
   getTopUsers
 };
