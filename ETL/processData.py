@@ -8,7 +8,7 @@ import os
 import sys
 import pandas as pd
 import numpy as np
-from ETL.userGazeVideoCreator import UserGazeVideoCreator
+from etl.userGazeVideoCreator import UserGazeVideoCreator
 
 from dotenv import load_dotenv
 

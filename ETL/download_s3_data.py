@@ -11,23 +11,29 @@ from pathlib import Path
 from datetime import datetime
 
 def setup_directories():
-    """Create necessary local directories"""
+    """Create necessary local directories in project root"""
+    # Get the project root directory (parent of etl directory)
+    project_root = Path(__file__).parent.parent
+    
     directories = [
-        'data/raw',
-        'data/processed', 
-        'data/raw/results',
-        'data/raw/users',
-        'data/raw/videos',
-        'models'
+        project_root / 'data' / 'raw',
+        project_root / 'data' / 'processed', 
+        project_root / 'data' / 'raw' / 'results',
+        project_root / 'data' / 'raw' / 'users',
+        project_root / 'data' / 'raw' / 'videos',
+        project_root / 'models'
     ]
     
     for directory in directories:
-        Path(directory).mkdir(parents=True, exist_ok=True)
+        directory.mkdir(parents=True, exist_ok=True)
         print(f"Success: Created directory: {directory}")
 
 def download_s3_results(s3_client, bucket_name='hahd-primary-data-storage'):
     """Download survey results from S3"""
     print("\nStep 1: Downloading survey results from S3...")
+    
+    # Get the project root directory
+    project_root = Path(__file__).parent.parent
     
     try:
         # List all files in raw/results/
@@ -43,9 +49,9 @@ def download_s3_results(s3_client, bucket_name='hahd-primary-data-storage'):
         count = 0
         for obj in response['Contents']:
             if obj['Key'].endswith('.json'):
-                # Download each result file
-                local_path = f"data/{obj['Key']}"
-                s3_client.download_file(bucket_name, obj['Key'], local_path)
+                # Download each result file to project root
+                local_path = project_root / 'data' / obj['Key']
+                s3_client.download_file(bucket_name, obj['Key'], str(local_path))
                 count += 1
         
         print(f"Success: Downloaded {count} result files")
@@ -58,6 +64,9 @@ def download_s3_results(s3_client, bucket_name='hahd-primary-data-storage'):
 def download_s3_users(s3_client, bucket_name='hahd-primary-data-storage'):
     """Download user data from S3"""
     print("\nStep 2: Downloading user data from S3...")
+    
+    # Get the project root directory
+    project_root = Path(__file__).parent.parent
     
     try:
         # List all files in raw/users/
@@ -73,9 +82,9 @@ def download_s3_users(s3_client, bucket_name='hahd-primary-data-storage'):
         count = 0
         for obj in response['Contents']:
             if obj['Key'].endswith('.json'):
-                # Download each user file
-                local_path = f"data/{obj['Key']}"
-                s3_client.download_file(bucket_name, obj['Key'], local_path)
+                # Download each user file to project root
+                local_path = project_root / 'data' / obj['Key']
+                s3_client.download_file(bucket_name, obj['Key'], str(local_path))
                 count += 1
         
         print(f"Success: Downloaded {count} user files")
@@ -88,6 +97,9 @@ def download_s3_users(s3_client, bucket_name='hahd-primary-data-storage'):
 def download_s3_videos(s3_client, bucket_name='hahd-primary-data-storage', limit=None):
     """Download video files from S3"""
     print(f"\nStep 3: Downloading videos from S3 (limit={limit})...")
+    
+    # Get the project root directory
+    project_root = Path(__file__).parent.parent
     
     try:
         # List all files in raw/videos/
@@ -106,12 +118,12 @@ def download_s3_videos(s3_client, bucket_name='hahd-primary-data-storage', limit
         
         for obj in response['Contents']:
             if obj['Key'].endswith(('.mp4', '.avi', '.mov')):
-                # Download each video file
-                local_path = f"data/{obj['Key']}"
+                # Download each video file to project root
+                local_path = project_root / 'data' / obj['Key']
                 file_size_mb = obj['Size'] / (1024 * 1024)
                 
                 print(f"Downloading {obj['Key']} ({file_size_mb:.1f} MB)...")
-                s3_client.download_file(bucket_name, obj['Key'], local_path)
+                s3_client.download_file(bucket_name, obj['Key'], str(local_path))
                 
                 count += 1
                 total_size += obj['Size']
@@ -132,10 +144,13 @@ def create_local_csv_files(s3_client, bucket_name='hahd-primary-data-storage'):
     
     import pandas as pd
     
+    # Get the project root directory
+    project_root = Path(__file__).parent.parent
+    
     try:
         # Process survey results
         results_data = []
-        results_dir = Path('data/raw/results')
+        results_dir = project_root / 'data' / 'raw' / 'results'
         
         if results_dir.exists():
             for json_file in results_dir.glob('*.json'):
@@ -160,12 +175,13 @@ def create_local_csv_files(s3_client, bucket_name='hahd-primary-data-storage'):
         
         if results_data:
             df_results = pd.DataFrame(results_data)
-            df_results.to_csv('data/raw/survey_results_raw.csv', index=False)
+            csv_path = project_root / 'data' / 'raw' / 'survey_results_raw.csv'
+            df_results.to_csv(csv_path, index=False)
             print(f"Success: Created survey_results_raw.csv with {len(results_data)} records")
         
         # Process user data
         users_data = []
-        users_dir = Path('data/raw/users')
+        users_dir = project_root / 'data' / 'raw' / 'users'
         
         if users_dir.exists():
             for json_file in users_dir.glob('*.json'):
@@ -191,7 +207,8 @@ def create_local_csv_files(s3_client, bucket_name='hahd-primary-data-storage'):
         
         if users_data:
             df_users = pd.DataFrame(users_data)
-            df_users.to_csv('data/raw/users_data_raw.csv', index=False)
+            csv_path = project_root / 'data' / 'raw' / 'users_data_raw.csv'
+            df_users.to_csv(csv_path, index=False)
             print(f"Success: Created users_data_raw.csv with {len(users_data)} records")
         
         return len(results_data), len(users_data)
@@ -246,11 +263,13 @@ def main():
     print(f"User data: {users_count} JSON files → {csv_users} CSV records") 
     print(f"Videos: {videos_count} files")
     
-    print(f"\nData structure created:")
-    print(f"  data/raw/survey_results_raw.csv")
-    print(f"  data/raw/users_data_raw.csv")
-    print(f"  data/raw/videos/ ({videos_count} videos)")
-    print(f"  models/ (ready for model outputs)")
+    # Get project root for display
+    project_root = Path(__file__).parent.parent
+    print(f"\nData structure created in project root:")
+    print(f"  {project_root}/data/raw/survey_results_raw.csv")
+    print(f"  {project_root}/data/raw/users_data_raw.csv")
+    print(f"  {project_root}/data/raw/videos/ ({videos_count} videos)")
+    print(f"  {project_root}/models/ (ready for model outputs)")
 
 if __name__ == "__main__":
     main()

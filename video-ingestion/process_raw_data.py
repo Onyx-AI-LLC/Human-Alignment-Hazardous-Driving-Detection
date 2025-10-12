@@ -2,10 +2,10 @@ import os
 import subprocess
 
 # Path to the folder containing the video files
-video_folder = "/Users/lennoxanderson/Documents/machineLearning/data/TeslaRawDrivingFootage/RecentClips"  # Replace with your folder path
+video_folder = "/Users/lennoxanderson/Documents/Archive"  # Replace with your folder path
 
 # Output folder for combined videos
-output_folder = "/Users/lennoxanderson/Documents/machineLearning/data/TeslaRawDrivingFootage/SecondBatch"  # Replace with your desired output folder
+output_folder = "/Users/lennoxanderson/Documents/Output/"  # Replace with your desired output folder
 os.makedirs(output_folder, exist_ok=True)
 
 # Camera types to process

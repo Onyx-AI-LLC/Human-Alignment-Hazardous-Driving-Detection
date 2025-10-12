@@ -5,7 +5,13 @@ const HahdHeader: React.FC = () => {
     <>
       {/* Fixed Back Button - positioned like Profile component */}
       <div className="position-fixed start-0 p-3" style={{ zIndex: 9999, top: '0.5rem' }}>
-        <a href="/" className="btn btn-text">← Back to Onyx AI</a>
+        <a href="/" className="btn btn-text" style={{ 
+          backgroundColor: '#000', 
+          color: '#fff', 
+          border: '2px solid #000',
+          fontWeight: '700',
+          textDecoration: 'none'
+        }}>← Back to Onyx AI</a>
       </div>
       
       <header className="hahd-header">

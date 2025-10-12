@@ -18,70 +18,70 @@ const trainingData: TrainingIteration[] = [
   {
     id: 1,
     simulations: 50,
-    accuracy: 20,
-    precision: 18,
-    recall: 22,
-    f1Score: 20,
+    accuracy: 8,
+    precision: 6,
+    recall: 11,
+    f1Score: 7,
     epoch: 1,
     video: demoVideo
   },
   {
     id: 2,
     simulations: 100,
-    accuracy: 35,
-    precision: 32,
-    recall: 38,
-    f1Score: 35,
+    accuracy: 12,
+    precision: 9,
+    recall: 15,
+    f1Score: 11,
     epoch: 2,
     video: demoVideo
   },
   {
     id: 3,
     simulations: 200,
-    accuracy: 52,
-    precision: 48,
-    recall: 56,
-    f1Score: 52,
+    accuracy: 17,
+    precision: 14,
+    recall: 21,
+    f1Score: 16,
     epoch: 3,
     video: demoVideo
   },
   {
     id: 4,
     simulations: 350,
-    accuracy: 68,
-    precision: 65,
-    recall: 71,
-    f1Score: 68,
+    accuracy: 19,
+    precision: 23,
+    recall: 16,
+    f1Score: 18,
     epoch: 4,
     video: demoVideo
   },
   {
     id: 5,
     simulations: 500,
-    accuracy: 78,
-    precision: 75,
-    recall: 81,
-    f1Score: 78,
+    accuracy: 24,
+    precision: 18,
+    recall: 28,
+    f1Score: 22,
     epoch: 5,
     video: demoVideo
   },
   {
     id: 6,
     simulations: 750,
-    accuracy: 84,
-    precision: 82,
-    recall: 86,
-    f1Score: 84,
+    accuracy: 29,
+    precision: 26,
+    recall: 33,
+    f1Score: 28,
     epoch: 6,
     video: demoVideo
   },
   {
     id: 7,
     simulations: 1000,
-    accuracy: 89,
-    precision: 87,
-    recall: 91,
-    f1Score: 89,
+    accuracy: 42,
+    precision: 35,
+    recall: 38,
+    f1Score: 27,
     epoch: 7,
     video: demoVideo
   }
@@ -95,8 +95,19 @@ const TrainingTimeline: React.FC = () => {
   // Auto-play video when current iteration changes
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.load();
-      videoRef.current.play().catch(console.error);
+      // Only try to play if the video is ready
+      const video = videoRef.current;
+      const tryPlay = () => {
+        video.play().catch(() => {
+          // Silently handle autoplay rejection - browser may block autoplay
+        });
+      };
+      
+      if (video.readyState >= 2) {
+        tryPlay();
+      } else {
+        video.addEventListener('canplay', tryPlay, { once: true });
+      }
     }
   }, [currentIndex]);
 

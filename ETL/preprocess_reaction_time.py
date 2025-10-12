@@ -359,14 +359,55 @@ def apply_reaction_time_adjustments(gaze_csv: str, users_csv: str, output_csv: s
     
     return adjusted_df
 
-# example usage
+# unified pipeline usage
 if __name__ == "__main__":
-    # input paths
-    gaze_csv = "data/processed/screen&gaze_scaled_last15s.csv"
-    users_csv = "../data/raw/users_data_raw.csv"
-    output_csv = "data/processed/screen&gaze_scaled_last15s_adjusted.csv"
+    print("="*80)
+    print("reaction time preprocessing - unified pipeline")
+    print("="*80)
     
-    # apply adjustments
-    adjusted_df = apply_reaction_time_adjustments(gaze_csv, users_csv, output_csv)
+    # import unified preprocessing utilities
+    from preprocessing_utils import get_preprocessing_utils
+    utils = get_preprocessing_utils()
     
-    print(f"\nadjusted data saved and ready for analysis!")
+    # load output from previous step (render_delay)
+    gaze_df = utils.load_previous_output('render_delay', 'results')
+    if gaze_df.empty:
+        print("error: no gaze data found from previous step")
+        exit(1)
+    
+    # load user demographics data
+    users_df = utils.download_raw_data('users')
+    if users_df.empty:
+        print("warning: no user demographics data found, skipping adjustments")
+        processed_df = gaze_df
+    else:
+        # create temporary files for processing
+        temp_gaze = "/tmp/temp_gaze.csv"
+        temp_users = "/tmp/temp_users.csv"
+        temp_output = "/tmp/temp_output.csv"
+        
+        gaze_df.to_csv(temp_gaze, index=False)
+        users_df.to_csv(temp_users, index=False)
+        
+        # apply reaction time adjustments
+        processed_df = apply_reaction_time_adjustments(temp_gaze, temp_users, temp_output)
+    
+    print(f"processed {len(processed_df)} records")
+    
+    # save to unified S3 structure
+    saved_keys = utils.save_unified_output(
+        processed_df, 
+        data_type='results',
+        script_name='reaction_time'
+    )
+    
+    print(f"\n" + "="*80)
+    print("reaction time preprocessing complete!")
+    print("="*80)
+    print(f"output files saved to S3:")
+    for key in saved_keys[:3]:
+        print(f"  - s3://{utils.bucket}/{key}")
+    if len(saved_keys) > 3:
+        print(f"  - ... and {len(saved_keys) - 3} more files")
+    
+    print(f"\nadjusted data ready for structure processing!")

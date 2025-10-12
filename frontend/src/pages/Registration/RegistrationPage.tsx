@@ -183,6 +183,27 @@ const RegistrationPage: React.FC = () => {
         return () => window.removeEventListener('resize', checkScreenSize);
     }, []);
 
+    useEffect(() => {
+        // Enable scrolling for registration page
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflow = 'auto';
+        const root = document.getElementById('root');
+        if (root) {
+            root.style.overflow = 'auto';
+            root.style.height = 'auto';
+        }
+
+        return () => {
+            // Reset on cleanup
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+            if (root) {
+                root.style.overflow = '';
+                root.style.height = '100vh';
+            }
+        };
+    }, []);
+
     if (isScreenTooSmall) {
         return (
             <div className={styles.screenWarning}>
@@ -200,9 +221,9 @@ const RegistrationPage: React.FC = () => {
     return (
         <>
             <HahdHeader />
-            <div className={styles.container}>
+            <div className={`${styles.container} registration-page`}>
             <Container className={styles.containerWrapper}>
-                <Row className="h-100">
+                <Row>
                     {/* First Column */}
                     <Col
                         md={12}

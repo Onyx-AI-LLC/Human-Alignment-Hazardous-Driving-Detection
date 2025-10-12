@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useSignOut from "../../hooks/useSignOut";
 import VideoPlayer from "../../components/video/VideoPlayer";
 import Questions from "../Questions/Questions";
 import { Modal, Button } from "react-bootstrap";
@@ -8,6 +9,7 @@ import HahdHeader from "../../components/hahd/HahdHeader";
 
 const Survey: React.FC = () => {
     const navigate = useNavigate();
+    const { signOut } = useSignOut();
     const [videoPlaying, setVideoPlaying] = useState<boolean>(true);
     const [videoId, setVideoId] = useState('');
     const [spacebarTimestamps, setSpacebarTimestamps] = useState<number[]>([]);
@@ -29,7 +31,8 @@ const Survey: React.FC = () => {
     }
 
     const handleReturnHome = () => {
-        navigate('/hahd/dashboard');
+        signOut();
+        navigate('/hahd');
     }
 
     const handleVideoId = (videoId: string) => {
@@ -105,6 +108,7 @@ const Survey: React.FC = () => {
                         variant="primary"
                         onClick={handleNextScenario}
                         className={styles.nextSurveyButton}
+                        style={{ fontSize: '0.9rem' }}
                     >
                         Yes, I'm Ready
                     </Button>
@@ -112,6 +116,7 @@ const Survey: React.FC = () => {
                         variant="outline-secondary"
                         onClick={handleReturnHome}
                         className={styles.returnHomeButton}
+                        style={{ fontSize: '0.9rem' }}
                     >
                         Return to Home Page
                     </Button>

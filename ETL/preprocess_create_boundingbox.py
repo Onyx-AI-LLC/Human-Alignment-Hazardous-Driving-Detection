@@ -663,17 +663,58 @@ def run_eda(csv_path: str):
     
     return df, aggregated_df, metrics
 
-# example usage
+# unified pipeline usage
 if __name__ == "__main__":
-    # path to your restructured csv
-    csv_path = "data/processed/hazard_training_dataset.csv"
+    print("="*80)
+    print("bounding box preprocessing (final step) - unified pipeline")
+    print("="*80)
     
-    # run the eda
-    df, aggregated_df, metrics = run_eda(csv_path)
+    # import unified preprocessing utilities
+    from preprocessing_utils import get_preprocessing_utils
+    utils = get_preprocessing_utils()
     
-    print("\nready for object detection integration!")
-    print("next steps:")
-    print("1. run yolo on video frames at aggregated timestamps")
-    print("2. match detected objects with gaze patterns using distance metrics")
-    print("3. assign hazard labels based on attention scores")
-    print("4. train hazard detection model on visual features only")
+    # load output from previous step (structure)
+    input_df = utils.load_previous_output('structure', 'results')
+    if input_df.empty:
+        print("error: no input data found from previous step")
+        exit(1)
+    
+    print(f"loaded {len(input_df)} records from previous step")
+    
+    # create temporary input file for processing
+    temp_input = "/tmp/temp_input.csv"
+    input_df.to_csv(temp_input, index=False)
+    
+    # run the eda and bounding box analysis
+    df, aggregated_df, metrics = run_eda(temp_input)
+    
+    # save both the original structured data and aggregated data
+    saved_keys1 = utils.save_unified_output(
+        df, 
+        data_type='results',
+        script_name='boundingbox_full'
+    )
+    
+    saved_keys2 = utils.save_unified_output(
+        aggregated_df, 
+        data_type='results',
+        script_name='boundingbox_aggregated'
+    )
+    
+    print(f"\n" + "="*80)
+    print("bounding box preprocessing complete!")
+    print("="*80)
+    print(f"full dataset files saved to S3:")
+    for key in saved_keys1[:2]:
+        print(f"  - s3://{utils.bucket}/{key}")
+    if len(saved_keys1) > 2:
+        print(f"  - ... and {len(saved_keys1) - 2} more files")
+        
+    print(f"\naggregated dataset files saved to S3:")
+    for key in saved_keys2[:2]:
+        print(f"  - s3://{utils.bucket}/{key}")
+    if len(saved_keys2) > 2:
+        print(f"  - ... and {len(saved_keys2) - 2} more files")
+    
+    print(f"\nsilver tier preprocessing pipeline complete!")
+    print("ready for YOLOv8 object detection (gold tier processing)!")

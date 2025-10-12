@@ -9,7 +9,6 @@ body, html, #root {
   margin: 0;
   padding: 0;
   height: 100vh;
-  overflow: hidden;
 }
 
 /* Prevent scrolling on all containers */
@@ -301,7 +300,7 @@ body, html, #root {
 /* Video Player Styles */
 .video-container {
   border: 3px solid #000;
-  margin: 2rem 0;
+  margin: 0;
   background: #000;
 }
 
@@ -442,50 +441,57 @@ body, html, #root {
   }
 }
 
-/* Ensure existing page styles work with new branding */
-.signin-container,
-.registration-container,
-.landing-container,
-.calibration-container,
+/* Ensure survey/simulation pages work with new branding - prevent scrolling during videos */
 .survey-container,
-.models-container {
+.models-container,
+.calibration-container {
   min-height: calc(100vh - 80px);
   max-height: calc(100vh - 80px);
   background: #fff;
   overflow: hidden;
 }
 
-/* Fix container heights to prevent vertical scrolling */
-.vh-100, .h-100 {
+/* Fix container heights to prevent vertical scrolling during survey/simulation only */
+.survey-container .vh-100, 
+.survey-container .h-100,
+.models-container .vh-100,
+.models-container .h-100,
+.calibration-container .vh-100,
+.calibration-container .h-100 {
   height: calc(100vh - 80px) !important;
   max-height: calc(100vh - 80px) !important;
   overflow: hidden !important;
 }
 
-/* Container adjustments */
-.container-fluid {
+/* Container adjustments for survey/simulation pages only */
+.survey-container .container-fluid,
+.models-container .container-fluid,
+.calibration-container .container-fluid {
   height: calc(100vh - 80px) !important;
   max-height: calc(100vh - 80px) !important;
   overflow: hidden !important;
 }
 
-.container-fluid.vh-100 {
+/* Fix Bootstrap container height for survey/simulation pages only */
+.survey-container .container,
+.models-container .container,
+.calibration-container .container {
   height: calc(100vh - 80px) !important;
   max-height: calc(100vh - 80px) !important;
   overflow: hidden !important;
 }
 
-/* Fix Bootstrap container height */
-.container.h-100, .container {
-  height: calc(100vh - 80px) !important;
-  max-height: calc(100vh - 80px) !important;
-  overflow: hidden !important;
+/* Allow scrolling on registration page */
+.registration-page {
+  overflow-y: auto !important;
+  height: auto !important;
+  max-height: none !important;
 }
 
-/* Force all page containers to respect height limits */
-div[class*="container"] {
-  max-height: calc(100vh - 80px) !important;
-  overflow: hidden !important;
+.registration-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 /* Override any Bootstrap or existing styles that conflict */

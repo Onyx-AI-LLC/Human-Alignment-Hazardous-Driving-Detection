@@ -26,7 +26,6 @@
     max-width: 100vw;
     width: 100%;
     height: calc(100vh - 80px);
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
