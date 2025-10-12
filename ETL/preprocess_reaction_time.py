@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 import json
 import ast
-import re
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 class ReactionTimeAdjuster:
     def __init__(self, gaze_csv_path: str, users_csv_path: str):
@@ -35,7 +34,7 @@ class ReactionTimeAdjuster:
     
     def _parse_user_demographics(self) -> Dict:
         """
-        parse user demographics from the form field
+        parse user demographics from the user data fields
         """
         demographics = {}
         
@@ -43,16 +42,17 @@ class ReactionTimeAdjuster:
             user_email = row['email']
             
             try:
-                # parse the form field (it's a string representation of a dict)
-                form_str = str(row['form'])
+                # extract age directly from user data
+                age = row.get('age', None)
+                if pd.notna(age):
+                    age = int(age)
+                else:
+                    age = None
                 
-                # extract age
-                age_match = re.search(r"'age':\s*(\d+)", form_str)
-                age = int(age_match.group(1)) if age_match else None
-                
-                # extract gender
-                gender_match = re.search(r"'gender':\s*'([^']+)'", form_str)
-                gender = gender_match.group(1) if gender_match else None
+                # extract gender directly from user data
+                gender = row.get('gender', None)
+                if pd.isna(gender):
+                    gender = None
                 
                 demographics[user_email] = {
                     'age': age,
