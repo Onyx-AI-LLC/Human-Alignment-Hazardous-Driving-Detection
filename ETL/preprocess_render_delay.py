@@ -287,14 +287,46 @@ def extract_last_15_seconds(input_path: str, output_path: str = None, duration_s
     
     return processed_df
 
-# example usage
+# unified pipeline usage
 if __name__ == "__main__":
-    # input and output paths
-    input_csv = "data/processed/screen&gaze_scaled.csv"
-    output_csv = "data/processed/screen&gaze_scaled_last15s.csv"
+    print("="*80)
+    print("render delay preprocessing - unified pipeline")
+    print("="*80)
+    
+    # import unified preprocessing utilities
+    from preprocessing_utils import get_preprocessing_utils
+    utils = get_preprocessing_utils()
+    
+    # load output from previous step (screensize_attention)
+    input_df = utils.load_previous_output('screensize_attention', 'results')
+    if input_df.empty:
+        print("error: no input data found from previous step")
+        exit(1)
+    
+    print(f"loaded {len(input_df)} records from previous step")
+    
+    # create temporary input file for the extractor
+    temp_input = "/tmp/temp_input.csv"
+    input_df.to_csv(temp_input, index=False)
     
     # extract last 15 seconds from each video
-    processed_df = extract_last_15_seconds(input_csv, output_csv, duration_seconds=15.0)
+    processed_df = extract_last_15_seconds(temp_input, "/tmp/temp_output.csv", duration_seconds=15.0)
+    
+    # save to unified S3 structure
+    saved_keys = utils.save_unified_output(
+        processed_df, 
+        data_type='results',
+        script_name='render_delay'
+    )
+    
+    print(f"\n" + "="*80)
+    print("render delay preprocessing complete!")
+    print("="*80)
+    print(f"output files saved to S3:")
+    for key in saved_keys[:3]:
+        print(f"  - s3://{utils.bucket}/{key}")
+    if len(saved_keys) > 3:
+        print(f"  - ... and {len(saved_keys) - 3} more files")
     
     print(f"\nprocessed {len(processed_df)} records")
     print(f"data ready for hazard detection pipeline")

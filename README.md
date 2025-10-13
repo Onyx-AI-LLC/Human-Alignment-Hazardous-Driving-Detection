@@ -10,7 +10,7 @@ The Human-Aligned Hazardous Driving (HAHD) project is an initiative focused on c
 ```
 HAHD/
 ├── data/
-│   ├── processed/              # Processed data after running the transform and processing (ETL)
+│   ├── processed/              # Processed data after running the transform and processing (etl)
 │   |       ├── driving_videos/ 
 │   |       ├── badgazedata.csv 
 │   |       ├── normalized_gaze_data.csv 
@@ -18,11 +18,11 @@ HAHD/
 │   |       ├── binned_video_dat_wo_user.csv
 │   |       ├── aggregate_gaze_data_by_video.csv
 │   ├── raw/
-│   |       ├── driving_videos/ # Videos from s3 bucket after running extraction (ETL)
-│   |       ├── survey_results_raw.csv # Data from MongoDB running extraction (ETL)
-│   |       ├── users_data.csv # Data from MongoDB running extraction (ETL)
-├── EDA/                        # EDA Folder
-├── ETL/                        # Folder with ETL process
+│   |       ├── driving_videos/ # Videos from s3 bucket after running extraction (etl)
+│   |       ├── survey_results_raw.csv # Data from MongoDB running extraction (etl)
+│   |       ├── users_data.csv # Data from MongoDB running extraction (etl)
+├── eda/                        # eda Folder
+├── etl/                        # Folder with etl process
 ├── frontend/                   # code for frontend of the data collection (survey) web app
 ├── server/                     # code for backend of the data collection (survey) web app
 ├── VideoProcessingManagement   # code to process the driving footage before upload to S3 bucket
@@ -46,10 +46,10 @@ HAHD/
   - [Backend README](https://github.com/Onyx-AI-LLC/Human-Alignment-Hazardous-Driving-Detection/tree/main/server/README.md)
 
 - **ETL Pipeline:**  
-  [ETL README](https://github.com/Onyx-AI-LLC/Human-Alignment-Hazardous-Driving-Detection/tree/main/ETL/README.md)
+  [ETL README](https://github.com/Onyx-AI-LLC/Human-Alignment-Hazardous-Driving-Detection/tree/main/etl/README.md)
 
 - **Exploratory Data Analysis:**  
-  [EDA README](https://github.com/Onyx-AI-LLC/Human-Alignment-Hazardous-Driving-Detection/tree/main/EDA/README.md)
+  [EDA README](https://github.com/Onyx-AI-LLC/Human-Alignment-Hazardous-Driving-Detection/tree/main/eda/README.md)
 
 - **Model Training and Evaluation:**  
   [Models README](https://github.com/Onyx-AI-LLC/Human-Alignment-Hazardous-Driving-Detection/tree/main/models/README.md)

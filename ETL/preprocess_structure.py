@@ -512,16 +512,46 @@ def process_gaze_data(input_csv_path: str, output_csv_path: str):
     
     return final_df
 
-# example usage
+# unified pipeline usage
 if __name__ == "__main__":
-    # replace with your actual file paths
-    input_file = "data/processed/screen&gaze_scaled_last15s_adjusted.csv"
-    output_file = "data/processed/hazard_training_dataset.csv"
+    print("="*80)
+    print("structure preprocessing (heavy compute) - unified pipeline")
+    print("="*80)
     
-    # process the data
-    result_df = process_gaze_data(input_file, output_file)
+    # import unified preprocessing utilities
+    from preprocessing_utils import get_preprocessing_utils
+    utils = get_preprocessing_utils()
     
-    # optionally, create a sample for inspection
-    sample_df = result_df.head(100)
-    sample_df.to_csv("data/processed/hazard_training_sample.csv", index=False)
-    print(f"\nsample saved to data/processed/hazard_training_sample.csv")
+    # load output from previous step (reaction_time)
+    input_df = utils.load_previous_output('reaction_time', 'results')
+    if input_df.empty:
+        print("error: no input data found from previous step")
+        exit(1)
+    
+    print(f"loaded {len(input_df)} records from previous step")
+    
+    # create temporary input file for processing
+    temp_input = "/tmp/temp_input.csv"
+    temp_output = "/tmp/temp_output.csv"
+    input_df.to_csv(temp_input, index=False)
+    
+    # process the data (heavy compute step)
+    result_df = process_gaze_data(temp_input, temp_output)
+    
+    # save to unified S3 structure
+    saved_keys = utils.save_unified_output(
+        result_df, 
+        data_type='results',
+        script_name='structure'
+    )
+    
+    print(f"\n" + "="*80)
+    print("structure preprocessing complete!")
+    print("="*80)
+    print(f"output files saved to S3:")
+    for key in saved_keys[:3]:
+        print(f"  - s3://{utils.bucket}/{key}")
+    if len(saved_keys) > 3:
+        print(f"  - ... and {len(saved_keys) - 3} more files")
+    
+    print(f"\nstructured data ready for bounding box analysis!")

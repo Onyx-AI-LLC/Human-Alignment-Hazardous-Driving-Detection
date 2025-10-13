@@ -407,7 +407,7 @@ df_truncated = truncate_videos_to_15_seconds(df.copy())
         
         code_path = os.path.join(data_dir, 'video_truncation_code.py')
         with open(code_path, 'w') as f:
-            f.write("# Video Truncation Code Generated from EDA Analysis\n")
+            f.write("# Video Truncation Code Generated from eda Analysis\n")
             f.write("# This code truncates videos to 15 seconds maximum duration\n\n")
             f.write("import json\n")
             f.write("import pandas as pd\n\n")

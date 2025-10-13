@@ -7,6 +7,7 @@ import questionnaireTutorial from "../../assets/QuestionnaireTutorial.mp4";
 import { useState } from "react";
 import Profile from "../../components/Profile/Profile";
 import styles from "./LandingPage.module.css";
+import HahdHeader from "../../components/hahd/HahdHeader";
 
 const LandingPage: React.FC = () => {
     const navigate = useNavigate();
@@ -24,7 +25,7 @@ const LandingPage: React.FC = () => {
             "The Human-Alignment Hazard Detection Survey would like to access your camera."
         );
         if (permissions) {
-            navigate("/calibration");
+            navigate("/hahd/calibration");
         }
     };
 
@@ -165,7 +166,9 @@ const LandingPage: React.FC = () => {
     };
 
     return (
-        <Container fluid className={styles.container}>
+        <>
+            <HahdHeader />
+            <Container fluid className={styles.container}>
             <Profile />
 
             {/* Stepper Component */}
@@ -222,6 +225,7 @@ const LandingPage: React.FC = () => {
                 </Button>
             </div>
         </Container>
+        </>
     );
 };
 

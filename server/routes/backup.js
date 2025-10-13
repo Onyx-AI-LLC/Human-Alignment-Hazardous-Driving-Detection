@@ -62,7 +62,7 @@ router.get('/status', (req, res) => {
 // Backfill endpoint to migrate existing MongoDB data to S3
 router.post('/backfill', async (req, res) => {
   try {
-    console.log('🔄 Starting backfill process...');
+    console.log('Starting backfill process...');
     const result = await backfillMongoToS3();
     res.status(200).json({
       message: 'MongoDB backfill to S3 completed successfully',

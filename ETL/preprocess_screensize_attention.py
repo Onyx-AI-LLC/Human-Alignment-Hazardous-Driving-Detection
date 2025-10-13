@@ -87,20 +87,33 @@ class ConservativeGazePreprocessor:
         
         for idx, row in df.iterrows():
             try:
-                # extract viewport dimensions
-                window_dim_str = str(row['windowDimensions'])
-                width_match = re.search(r"'width':\s*(\d+)", window_dim_str)
-                height_match = re.search(r"'height':\s*(\d+)", window_dim_str)
-                
-                if not (width_match and height_match):
-                    parsing_errors.append(f"row {idx}: could not parse viewport dimensions")
+                # extract viewport dimensions from json_normalize columns
+                if 'windowDimensions.width' in row and 'windowDimensions.height' in row:
+                    viewport_width = int(row['windowDimensions.width'])
+                    viewport_height = int(row['windowDimensions.height'])
+                elif 'windowDimensions' in row:
+                    # fallback to old parsing method if nested object
+                    window_dim_str = str(row['windowDimensions'])
+                    width_match = re.search(r"'width':\s*(\d+)", window_dim_str)
+                    height_match = re.search(r"'height':\s*(\d+)", window_dim_str)
+                    
+                    if not (width_match and height_match):
+                        parsing_errors.append(f"row {idx}: could not parse viewport dimensions")
+                        continue
+                    
+                    viewport_width = int(width_match.group(1))
+                    viewport_height = int(height_match.group(1))
+                else:
+                    parsing_errors.append(f"row {idx}: windowDimensions not found")
                     continue
                 
-                viewport_width = int(width_match.group(1))
-                viewport_height = int(height_match.group(1))
-                
-                # parse gaze data
-                gaze_coords = self._parse_gaze_data(row['gaze'])
+                # parse gaze data - handle both string and list formats
+                if isinstance(row['gaze'], list):
+                    # Already parsed by json_normalize
+                    gaze_coords = row['gaze']
+                else:
+                    # String format, use existing parser
+                    gaze_coords = self._parse_gaze_data(row['gaze'])
                 
                 if not gaze_coords:
                     parsing_errors.append(f"row {idx}: no valid gaze coordinates")
@@ -114,7 +127,10 @@ class ConservativeGazePreprocessor:
                     'viewport_height': viewport_height,
                     'viewport_aspect_ratio': round(viewport_width/viewport_height, 3),
                     'raw_gaze_coords': gaze_coords,
-                    'form_data': row['formData']
+                    'form_data': {
+                        col.replace('formData.', ''): row[col] 
+                        for col in row.index if col.startswith('formData.')
+                    }
                 })
                 
             except Exception as e:
@@ -333,6 +349,15 @@ class ConservativeGazePreprocessor:
         print(f"video aspect ratio: {self.video_aspect_ratio:.3f}")
         print(f"quality threshold: {self.quality_threshold:.1%} (calibration failure removal only)")
         
+        # Debug: print available columns
+        print(f"Total columns: {len(df.columns)}")
+        print(f"Available columns: {list(df.columns)[:15]}")  # First 15 columns
+        print(f"Has windowDimensions.width: {'windowDimensions.width' in df.columns}")
+        print(f"Has gaze column: {'gaze' in df.columns}")
+        if 'gaze' in df.columns:
+            print(f"Gaze column type: {type(df['gaze'].iloc[0])}")
+            print(f"Sample gaze data: {df['gaze'].iloc[0][:2] if isinstance(df['gaze'].iloc[0], list) else str(df['gaze'].iloc[0])[:100]}")  # First 2 items or first 100 chars
+        
         # extract and parse data
         records_df = self.extract_viewport_dimensions(df)
         print(f"successfully parsed {len(records_df)} records")
@@ -454,57 +479,75 @@ class ConservativeGazePreprocessor:
 
 def main():
     """
-    run the conservative preprocessing pipeline
+    run the conservative preprocessing pipeline with unified S3 output and detailed logging
     """
-    print("="*80)
-    print("conservative gaze data preprocessing")
-    print("="*80)
+    from preprocessing_utils import get_preprocessing_utils
+    utils = get_preprocessing_utils()
     
-    # load raw data
-    input_file = '../data/raw/survey_results_raw.csv'
     try:
-        raw_df = pd.read_csv(input_file)
-        print(f"loaded {len(raw_df)} records from {input_file}")
-    except FileNotFoundError:
-        print(f"error: {input_file} not found")
-        return None
-    
-    # initialize preprocessor with conservative threshold
-    preprocessor = ConservativeGazePreprocessor(
-        video_aspect_ratio=1280/960,
-        quality_threshold=0.25  # 25% threshold for calibration failures only
-    )
-    
-    # process dataset
-    processed_df = preprocessor.process_dataset(raw_df)
-    
-    # create output directory if needed
-    output_dir = 'data/processed'
-    os.makedirs(output_dir, exist_ok=True)
-    
-    # save processed data
-    output_file = os.path.join(output_dir, 'screen&gaze_scaled.csv')
-    processed_df.to_csv(output_file, index=False)
-    
-    # save processing metadata
-    metadata_file = os.path.join(output_dir, 'preprocessing_metadata.json')
-    with open(metadata_file, 'w') as f:
-        json.dump(preprocessor.processing_stats, f, indent=2)
-    
-    print(f"\n" + "="*80)
-    print("conservative preprocessing complete!")
-    print("="*80)
-    print(f"output files:")
-    print(f"  - {output_file}")
-    print(f"  - {metadata_file}")
-    print(f"\nprocessing summary:")
-    print(f"  approach: conservative filtering (calibration failures only)")
-    print(f"  quality threshold: {preprocessor.quality_threshold:.1%}")
-    print(f"  records retained: {len(processed_df)}")
-    print(f"  coordinate types: video_area + non_video_area (both preserved)")
-    print(f"  target viewport: {preprocessor.target_viewport_size}")
-    
-    return processed_df
+        utils.log_progress("="*80)
+        utils.log_progress("SCREENSIZE ATTENTION PREPROCESSING - Starting")
+        utils.log_progress("="*80)
+        
+        # load raw data from S3
+        utils.log_progress("Step 1: Loading raw survey data from S3")
+        raw_df = utils.download_raw_data('results')
+        if raw_df.empty:
+            utils.log_error("No raw data found in S3 - cannot proceed")
+            return pd.DataFrame()
+        
+        utils.log_progress(f"Step 1 Complete: Loaded {len(raw_df)} records from S3")
+        
+        # initialize preprocessor with conservative threshold
+        utils.log_progress("Step 2: Initializing gaze preprocessor")
+        preprocessor = ConservativeGazePreprocessor(
+            video_aspect_ratio=1280/960,
+            quality_threshold=0.25  # 25% threshold for calibration failures only
+        )
+        utils.log_progress("Step 2 Complete: Preprocessor initialized with 25% quality threshold")
+        
+        # process dataset
+        utils.log_progress("Step 3: Starting gaze data processing (this may take several minutes)")
+        processed_df = preprocessor.process_dataset(raw_df)
+        
+        if processed_df.empty:
+            utils.log_error("Processing failed - no data returned from preprocessor")
+            return pd.DataFrame()
+        
+        utils.log_progress(f"Step 3 Complete: Processed {len(processed_df)} records successfully")
+        
+        # save to unified S3 structure with 100-row batches
+        utils.log_progress("Step 4: Saving processed data to S3 in parquet batches")
+        saved_keys = utils.save_unified_output(
+            processed_df, 
+            data_type='results',
+            script_name='screensize_attention'
+        )
+        
+        if not saved_keys:
+            utils.log_error("Failed to save output files to S3")
+            return pd.DataFrame()
+        
+        # Upload progress log to S3
+        utils.upload_progress_log()
+        
+        utils.log_progress("="*80)
+        utils.log_progress("SCREENSIZE ATTENTION PREPROCESSING - COMPLETE!")
+        utils.log_progress("="*80)
+        utils.log_progress(f"SUCCESS: Saved {len(saved_keys)} batch files to S3")
+        utils.log_progress(f"Processing Summary:")
+        utils.log_progress(f"  Input records: {len(raw_df)}")
+        utils.log_progress(f"  Output records: {len(processed_df)}")
+        utils.log_progress(f"  Quality threshold: {preprocessor.quality_threshold:.1%}")
+        utils.log_progress(f"  Target viewport: {preprocessor.target_viewport_size}")
+        utils.log_progress(f"Ready for next step: render_delay preprocessing")
+        
+        return processed_df
+        
+    except Exception as e:
+        utils.log_error("CRITICAL ERROR in screensize attention preprocessing", e)
+        utils.upload_progress_log()  # Upload logs even on failure
+        return pd.DataFrame()
 
 if __name__ == "__main__":
     processed_data = main()
