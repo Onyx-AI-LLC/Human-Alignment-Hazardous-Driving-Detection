@@ -21,6 +21,7 @@ const Calibration: React.FC = () => {
     y: 100,
     coordinate: 0,
     clicks: 5,  // Start from 5 instead of 0
+    calibrationComplete: false,
   });
 
   const setNextCoordinate = () => {
@@ -29,8 +30,8 @@ const Calibration: React.FC = () => {
       const isLastPoint = prev.coordinate === coordinates.length - 1;
 
       if (isLastPoint && nextClicks === 0) {  // Check for 0 instead of 5
-        setIsCalibrated(true);
-        return prev;
+        // Don't call setIsCalibrated here - do it in useEffect
+        return { ...prev, clicks: nextClicks, calibrationComplete: true };
       }
 
       if (nextClicks === 0) {  // Check for 0 instead of 5
@@ -40,6 +41,7 @@ const Calibration: React.FC = () => {
           y: coordinates[nextCoordinate]?.y,
           coordinate: nextCoordinate,
           clicks: 5,  // Reset to 5 instead of 0
+          calibrationComplete: false,
         };
       }
 
@@ -51,6 +53,12 @@ const Calibration: React.FC = () => {
     startWebGazer();
     return () => stopWebGazer();
   }, []);
+
+  useEffect(() => {
+    if (calibrationState.calibrationComplete) {
+      setIsCalibrated(true);
+    }
+  }, [calibrationState.calibrationComplete, setIsCalibrated]);
 
   const handleDotClick = () => {
     setNextCoordinate();

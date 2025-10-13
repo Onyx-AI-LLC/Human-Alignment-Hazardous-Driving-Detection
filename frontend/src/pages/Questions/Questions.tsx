@@ -172,7 +172,7 @@ const Questions: React.FC<QuestionsProps> = ({ onFormSumbitted, videoId, spaceba
                 <div>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className='mb-4'>
-                            <Form.Label>Did you press the <b>spacebar</b> when you detected a hazardous instance?</Form.Label>
+                            <Form.Label>Did you press the <b>spacebar</b> to record a hazardous instance?</Form.Label>
                             <div>
                                 <Form.Check
                                     type="radio"

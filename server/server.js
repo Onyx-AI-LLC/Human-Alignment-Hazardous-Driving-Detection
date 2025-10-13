@@ -1,14 +1,12 @@
 require('dotenv').config();
 const express = require('express');
-const connectMongoDB = require('./config/db');
 const auth = require('./routes/auth');
 const survey = require('./routes/survey');
 const videoRoutes = require('./routes/videos');
 const cors = require('cors');
 const app = express();
 
-// Connect to MongoDB
-connectMongoDB();
+// MongoDB connection removed - using S3 for data storage
 
 // Apply Middleware
 app.use(express.json({ limit: '50mb' }));

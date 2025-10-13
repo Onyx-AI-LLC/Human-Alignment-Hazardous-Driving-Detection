@@ -3,9 +3,9 @@ This script will run the project and output results in command line.
 Think of it as a local version of the web app
 '''
 
-from ETL.processData import DataProcessor
-from ETL.extractData import GazeDataExtractor
-from ETL.transformData import GazeDataTransformer
+from etl.processData import DataProcessor
+from etl.extractData import GazeDataExtractor
+from etl.transformData import GazeDataTransformer
 from models.naiveModel import NaiveHazardDetector
 from models.deep_learning_train import DeepLearningModel
 from models.traditionalCVModel import GazeCVClassifier
