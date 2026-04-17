@@ -1,7 +1,5 @@
 # Human-Aligned Hazardous Driving (HAHD) Project
 
-**For more detailed Research Documentation, visit:** [HAHD Research Documentation](https://drive.google.com/drive/folders/1wlECbFJnYx-kHMHiy0SNlJUpreA0P8hH?usp=sharing)
-
 ## Overview
 The Human-Aligned Hazardous Driving (HAHD) project is an initiative focused on collecting, processing, and analyzing driving behavior data to train machine learning models that align autonomous vehicle decision-making with human driving tendencies. This project consists of three main components:
 
@@ -96,3 +94,4 @@ python main.py
 
 --
 **This research is made possible due to collaboration between Duke University & Onyx AI LLC.**
+
