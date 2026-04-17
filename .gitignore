@@ -2,6 +2,7 @@
 .env
 .env.local
 .env.*
+!.env.example
 
 # Python
 __pycache__/
@@ -14,6 +15,10 @@ venv/
 ENV/
 env/
 
+# Jupyter
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
 # Output data
 data/
 *.csv
@@ -23,11 +28,17 @@ data/
 *.pth
 *.onnx
 
+# Large binaries / installers
+*.pkg
+*.mp4
+*.tar.gz
+
 # IDE specific files
 .idea/
 .vscode/
 *.swp
 .DS_Store
+**/.DS_Store
 
 # Distribution / packaging
 dist/
@@ -41,9 +52,9 @@ htmlcov/
 coverage.xml
 *.cover
 
+# Node
 node_modules/
 **/node_modules/
-.env
-.DS_Storenode_modules/
-**/node_modules/
-.env
+
+# Temp files
+~$*
