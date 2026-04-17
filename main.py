@@ -18,9 +18,7 @@ MODEL_CHECKPOINT_DIR = "./models/checkpoints"
 DEEP_LEARNING_CHECKPOINT = "deepLearningModel.pth"
 
 def main():
-    # TODO: Uncomment this line of code to download the data
-    # TODO: Currently commented since that takes a while!!!!
-    # Initialize extraction process
+    # Extraction downloads from S3 and MongoDB — comment out if data/raw/ is already populated
     extractor = GazeDataExtractor(DATA_DIR)
     extractor.extract_data()
 
